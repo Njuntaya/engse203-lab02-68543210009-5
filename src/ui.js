@@ -1,67 +1,70 @@
-import "./style.css";
-import { fetchLearningTasks } from "./api.js";
-import { filterTasks, getStats } from "./utils.js";
-import { renderStats, renderTasks, setMessage } from "./ui.js";
+import { getStatusLabel } from "./utils.js";
 
-const elements = {
-  message: document.querySelector("#app-message"),
-  stats: document.querySelector("#stats"),
-  taskList: document.querySelector("#task-list"),
-  search: document.querySelector("#search"),
-  status: document.querySelector("#status-filter"),
-};
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (character) => {
+    const map = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;",
+    };
 
-const state = {
-  tasks: [],
-  query: "",
-  status: "all",
-};
-
-function render() {
-  const visibleTasks = filterTasks(state.tasks, {
-    query: state.query,
-    status: state.status,
+    return map[character];
   });
-
-  renderStats(elements.stats, getStats(state.tasks));
-  renderTasks(elements.taskList, visibleTasks);
 }
 
-async function loadDashboard() {
-  try {
-    setMessage(elements.message, "loading", "กำลังโหลดข้อมูล...");
-    const params = new URLSearchParams(window.location.search);
+export function setMessage(element, type, text) {
+  element.className = `message ${type}`;
+  element.textContent = text;
+}
 
-    state.tasks = await fetchLearningTasks({
-      simulateError: params.get("simulateError") === "1",
-   });
+export function renderStats(element, stats) {
+  const cards = [
+    ["Total", stats.total],
+    ["To do", stats.todo],
+    ["In progress", stats.doing],
+    ["Done", stats.done],
+  ];
 
-    render();
-    setMessage(elements.message, "success", `โหลดข้อมูล ${state.tasks.length} รายการแล้ว`);
-  } catch (error) {
-    console.error("Unable to load dashboard:", error);
-    elements.stats.innerHTML = "";
-    elements.taskList.innerHTML = "";
-    setMessage(
-      elements.message,
-      "error",
-      `ไม่สามารถโหลดข้อมูลได้: ${error.message}`,
-    );
-  } finally {
-    console.info("Learning Dashboard load attempt finished.");
+  element.innerHTML = cards
+    .map(
+      ([label, count]) => `
+        <article class="stat-card">
+          <span>${label}</span>
+          <strong>${count}</strong>
+        </article>
+      `,
+    )
+    .join("");
+}
+
+export function renderTasks(element, tasks) {
+  if (tasks.length === 0) {
+    element.innerHTML = `
+      <article class="empty-state">
+        <h2>ไม่พบรายการที่ตรงกับเงื่อนไข</h2>
+        <p>ลองเปลี่ยนคำค้นหาหรือตัวกรองสถานะ</p>
+      </article>
+    `;
+    return;
   }
+
+  element.innerHTML = tasks
+    .map(
+      ({ week, title, topic, status, tags = [] }) => `
+        <article class="task-card">
+                  <div class="task-meta">
+            <span class="badge">Week ${week}</span>
+            <span class="badge status-${escapeHtml(status)}">${getStatusLabel(status)}</span>
+          </div>
+          <h2>${escapeHtml(title)}</h2>
+          <p>${escapeHtml(topic)}</p>
+          <div class="tags">
+            ${tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
+          </div>
+        </article>
+      `,
+    )
+    .join("");
 }
-
-elements.search.addEventListener("input", (event) => {
-  state.query = event.target.value;
-  render();
-});
-
-elements.status.addEventListener("change", (event) => {
-  state.status = event.target.value;
-  render();
-});
-
-loadDashboard();
-
-
