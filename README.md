@@ -1,5 +1,4 @@
-<img width="1919" height="1079" alt="553fc291-4954-4de1-b0af-517e268e716d" src="https://github.com/user-attachments/assets/2637ca34-24e9-40ff-b6f2-0a567273fbf2" /># ENGSE203 LAB 02 — Modern JavaScript Dashboard
-
+# ENGSE203 LAB 02 — Modern JavaScript Dashboar
 ## ผู้จัดทำ
 
 - ชื่อ-นามสกุล : นาย ณัฐวุฒิ จันทายา
@@ -90,7 +89,7 @@ https://njuntaya.github.io/engse203-lab02-68543210009-5/
 
 ### Error State
 https://njuntaya.github.io/engse203-lab02-68543210009-5/?simulateError=1
-<img width="1919" height="1079" alt="553fc291-4954-4de1-b0af-517e268e716d" src="https://github.com/user-attachments/assets/0df43330-3f35-48df-b31a-a93198
+<img width="1919" height="1079" alt="553fc291-4954-4de1-b0af-517e268e716d" src="https://github.com/user-attachments/assets/2637ca34-24e9-40ff-b6f2-0a567273fbf2" />
 
 
 ---
